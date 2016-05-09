@@ -62,6 +62,7 @@ end
 function response = submitParts(conf, email, token, parts)
   body = makePostBody(conf, email, token, parts);
   submissionUrl = submissionUrl();
+  params = {'jsonBody', body};
   responseBody = urlread(submissionUrl, 'post', params);
   response = loadjson(responseBody);
 end
