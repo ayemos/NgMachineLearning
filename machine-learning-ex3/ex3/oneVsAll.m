@@ -55,8 +55,7 @@ options = optimset('GradObj', 'on', 'MaxIter', 50);
 
 for c = 1:num_labels
 
-t = all_theta(c, :);
-t = fmincg(@(t)(lrCostFunction(t, X, (y == c), lambda)), ...
+all_theta(c, :) = fmincg(@(t)(lrCostFunction(t, X, (y == c), lambda)), ...
     initial_theta, options);
 
 end

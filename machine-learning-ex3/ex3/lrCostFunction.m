@@ -33,17 +33,14 @@ m = length(y); % number of training examples
 %           grad = grad + YOUR_CODE_HERE (using the temp variable)
 %
 
-theta
-lambda_eye = eye(size(theta)(0));
+lambda_eye = eye(size(theta)(1));
 lambda_eye(1, 1) = 0;
-lambda_theta = theta * lambda_eye;
+lambda_theta = lambda_eye * theta;
 
 J = ((-1 * y)' * log(sigmoid(X * theta)) - (1 - y)' * log(1 - (sigmoid(X * theta)))) / m ...
     + (lambda_theta' * lambda_theta) * lambda / (2 * m);
 
 grad = ((sigmoid(X * theta) - y)' * X)' / m + lambda_theta * lambda / m;
 % =============================================================
-
-grad = grad(:);
 
 end
