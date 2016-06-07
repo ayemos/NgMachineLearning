@@ -62,10 +62,13 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-X = [ones(size(X, 1), 1) X];
-a2 = sigmoid(X * Theta1');
-a2 = [ones(size(a2, 1), 1), a2];
-a3 = sigmoid(a2 * Theta2');
+a1 = [ones(m, 1) X];
+z2 = a1 * Theta1';
+a2 = sigmoid(z2);
+a2 = [ones(m, 1), a2];
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
+a3_1 = [ones(m, 1), a3];
 Y = eye(num_labels)(y,:);
 
 for c = 1:num_labels
@@ -74,26 +77,33 @@ J += (((-1 * Y(:,c))' * log(a3(:,c))) - ((1 - Y(:,c))' * log(1 - a3(:,c)))) / m;
 
 end
 
-lambda_eye_l1 = eye(size(Theta1, 1));
-lambda_eye_l1(1, 1) = 0;
-lambda_eye_r1 = eye(size(Theta1, 2));
-lambda_eye_r1(1, 1) = 0;
+theta1 = Theta1(:,2:size(Theta1,2));
+theta2 = Theta2(:,2:size(Theta2,2));
 
-lambda_eye_l2 = eye(size(Theta2, 1));
-lambda_eye_l2(1, 1) = 0;
-lambda_eye_r2 = eye(size(Theta2, 2));
-lambda_eye_r2(1, 1) = 0;
-
-lambda_theta1 = lambda_eye_l1 * Theta1 * lambda_eye_r1;
-lambda_theta2 = lambda_eye_l2 * Theta2 * lambda_eye_r2;
-
-size(lambda_theta1 * lambda_theta1')
-reg1 = sum(sum(lambda_theta1 * lambda_theta1'))
-reg2 = sum(sum(lambda_theta2 * lambda_theta2'))
-
-J += (reg1 + reg2) * lambda / (2 * m);
+J += lambda / 2 / m * (sum(sum(theta1.^2))+ sum(sum(theta2.^2)));
 
 % -------------------------------------------------------------
+
+for t = 1:m
+
+yt = Y(t,:);
+a3t = a3(t,:);
+
+delta_3 = a3t - yt;
+
+delta_2 = delta_3 * Theta2 .* sigmoidGradient([1, z2(t, :)]);
+delta_2 = delta_2(2:end);
+
+Theta1_grad = Theta1_grad + delta_2' * a1(t, :);
+Theta2_grad = Theta2_grad + delta_3' * a2(t, :);
+
+end
+
+Theta1_grad = Theta1_grad / m;
+Theta2_grad = Theta2_grad / m;
+
+Theta1_grad(:, 2:end) += Theta1(:, 2:end) * lambda / m;
+Theta2_grad(:, 2:end) += Theta2(:, 2:end) * lambda / m;
 
 % =========================================================================
 
